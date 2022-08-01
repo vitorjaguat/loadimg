@@ -20,3 +20,38 @@ const countriesContainer = document.querySelector('.countries');
 // 8. After the 2 seconds have passed, hide the current image
 // Test data: Images in the img folder. Test the error handler by passing a wrong image path. Set the network speed to “Fast 3G” in the dev tools Network tab, otherwise images load too fast
 
+const newImg = document.createElement('img');
+const imgContainer = document.querySelector('.images');
+const wait = function (seconds) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, seconds * 1000);
+    });
+};
+
+const createImage = function (imgPath) {
+    return new Promise(function (resolve, reject) {
+        newImg.src = `./img/${imgPath}`;
+        newImg.addEventListener('load', function () {
+            // newImg.classList.add('images');
+            newImg.style.display = 'block';
+            imgContainer.append(newImg);
+            resolve(newImg);
+        })
+        newImg.addEventListener('error', function () {
+            reject(new Error('Image not found 😟'));
+        })
+    })
+}
+
+createImage('img-1.jpg').then(newImg => {
+    console.log('Image 1 loaded');
+    return wait(2)
+}).then(() => {
+    newImg.style.display = 'none';
+    return createImage('img-2.jpg')
+}).then(newImg => {
+    console.log('Image 2 loaded');
+    return wait(2)
+}).then(() => newImg.style.display = 'none')
+    .catch(err => console.log(err));
+
